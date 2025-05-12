@@ -18,10 +18,14 @@ import session from "express-session";
 // Crea una instancia de la aplicación Express
 const app = express();
 
-// Configura las opciones de CORS para permitir acceso desde el frontend
-// en el puerto 8080
+// Configura las opciones de CORS para permitir acceso desde el frontend en producción y desarrollo
 const corsOptions = {
-  origin: "http://localhost:3001",
+  origin: [
+    "https://frontend-react-u4lc.onrender.com", // Dominio del frontend en producción
+    "http://localhost:3001", // Dominio del frontend en desarrollo
+  ],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Permite el envío de cookies o encabezados de autenticación
 };
 
 // Aplica el middleware de CORS a la aplicación
@@ -33,6 +37,7 @@ app.use(express.json());
 // Middleware para analizar solicitudes con cuerpo en formato URL-encoded (formularios)
 app.use(express.urlencoded({ extended: true }));
 
+// Configuración de sesiones (opcional, pero no recomendado para producción con MemoryStore)
 app.use(
   session({
     secret: "your-secret-key", // Cambia esto por una clave secreta segura
@@ -53,7 +58,7 @@ app.use("/api/auth", authRoutes);
 // Define la ruta base para pruebas de acceso según el rol del usuario: /api/test/*
 app.use("/api/test", userRoutes);
 
-// Define el puerto en el que se ejecutará el servidor. Usa 3000 por defecto si no hay una variable de entorno
+// Define el puerto en el que se ejecutará el servidor. Usa el puerto asignado por Render o 3000 por defecto
 const PORT = process.env.PORT || 3000;
 
 // Sincroniza los modelos con la base de datos (sin borrar datos si force es false)
