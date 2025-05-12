@@ -22,7 +22,7 @@ const app = express();
 const corsOptions = {
   origin: [
     "https://frontend-react-u4lc.onrender.com", // Dominio del frontend en producción
-    "http://localhost:3001", // Dominio del frontend en desarrollo
+   // "http://localhost:3001", // Dominio del frontend en desarrollo
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Permite el envío de cookies o encabezados de autenticación
