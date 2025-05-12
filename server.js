@@ -22,7 +22,7 @@ const app = express();
 const corsOptions = {
   origin: [
     "https://frontend-react-u4lc.onrender.com", // Dominio del frontend en producción
-   // "http://localhost:3001", // Dominio del frontend en desarrollo
+    // "http://localhost:3001", // Dominio del frontend en desarrollo
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Permite el envío de cookies o encabezados de autenticación
@@ -58,14 +58,26 @@ app.use("/api/auth", authRoutes);
 // Define la ruta base para pruebas de acceso según el rol del usuario: /api/test/*
 app.use("/api/test", userRoutes);
 
+// Función para inicializar los roles en la tabla `roles`
+const initializeRoles = async () => {
+  const roles = ["user", "admin", "moderator"];
+  for (const role of roles) {
+    const existingRole = await db.role.findOne({ where: { name: role } });
+    if (!existingRole) {
+      await db.role.create({ name: role });
+      console.log(`Role '${role}' created.`);
+    }
+  }
+};
+
 // Define el puerto en el que se ejecutará el servidor. Usa el puerto asignado por Render o 3000 por defecto
 const PORT = process.env.PORT || 3000;
 
 // Sincroniza los modelos con la base de datos (sin borrar datos si force es false)
-// Luego inicia el servidor y escucha en el puerto definido
-db.sequelize.sync({ force: false }).then(() => {
+// Luego inicia el servidor y asegura que los roles existan
+db.sequelize.sync({ force: false }).then(async () => {
   console.log("Database synchronized");
-
+  await initializeRoles(); // Inicializa los roles
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
   });
